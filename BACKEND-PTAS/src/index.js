@@ -1,49 +1,32 @@
-import { prisma } from "../lib/prisma.config.js";
+import express from "express";
+import dotenv from "dotenv";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth.js";
 
-// 1. Criar o usuário (permaneceu similar, mas com foco no cliente)
-async function criarUsuario(email, passwordHash) {
-const usuario = await prisma.user.create({
-data: {
-email,
-passwordHash,
-},
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5500;
+
+app.all("/api/auth/*", toNodeHandler(auth));
+
+app.use(express.json());
+
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-console.log(`Cliente cadastrado: ${usuario.email}`);
-return usuario;
-}
-
-// 2. Buscar as reservas da mesa
-async function buscarReservasUsuario(userId) {
-const usuarioComReservas = await prisma.user.findUnique({
-where: { id: userId },
-include: {
-reservas: { // Alterado de 'jogatinas' para 'reservas'
-include: { mesa: true } // Alterado de 'game' para 'mesa'
-}
-}
+app.get("/", (req, res) => {
+  res.json({
+    message: "🚀 MinURL API rodando!",
+    version: "1.0.0",
+    endpoints: {
+      health: "/health",
+      auth: "/api/auth/get-session",
+    },
+  });
 });
 
-if (!usuarioComReservas) {
-throw new Error("Usuário não encontrado");
-}
-
-console.log(`Reservas encontradas para o cliente: ${usuarioComReservas.email}`);
-return usuarioComReservas;
-}
-
-async function main() {
-// Exemplo de execução
-const novoUsuario = await criarUsuario("cliente@email.com", "senhaSegura123");
-
-const dados = await buscarReservasUsuario(novoUsuario.id);
-console.dir(dados, { depth: null });
-}
-
-main()
-.then(async () => await prisma.$disconnect())
-.catch(async (e) => {
-console.error(e);
-await prisma.$disconnect();
-process.exit(1);
+app.listen(PORT, () => {
+  console.log(`Servidor em http://localhost:${PORT}`);
 });
