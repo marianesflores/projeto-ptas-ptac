@@ -1,12 +1,14 @@
+import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
+import { requireAuth} from "./middleware/auth.js";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5500;
+const PORT = 5500;
 
 app.all("/api/auth/*", toNodeHandler(auth));
 
@@ -14,6 +16,13 @@ app.use(express.json());
 
 app.get("/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
+app.get("/api/me", requireAuth, (req, res) => {
+  res.json({
+    message: "Bem-vindo ao seu perfil!",
+    user: req.user,
+  });
 });
 
 app.get("/", (req, res) => {
