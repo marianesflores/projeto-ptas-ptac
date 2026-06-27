@@ -71,3 +71,15 @@ model Verification {
 
   @@map("verification")
 }
+
+
+model produto {
+  id         String   @id @default(cuid())
+  nome       String
+  estoque    Int
+  preco      Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("produto")
+}

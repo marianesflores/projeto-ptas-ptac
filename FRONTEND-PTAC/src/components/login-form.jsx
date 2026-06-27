@@ -48,7 +48,7 @@ export function LoginForm() {
       <form onSubmit={handleSubmit}>
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center mb-10">
-            <h1 className="text-xl font-bold">Bem-vindo ao minURL</h1>
+            <h1 className="text-xl font-bold">Bem vindo ao Cantinho do Sabor</h1>
             <FieldDescription>
               Não tem uma conta? <Link href="/register">Cadastre-se</Link>
             </FieldDescription>

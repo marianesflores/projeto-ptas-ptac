@@ -2,40 +2,44 @@ import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
 import { toNodeHandler } from "better-auth/node";
+
 import { auth } from "./lib/auth.js";
-//import { requireAuth} from "./middleware/auth.js";
+import produtosRoutes from "./routes/produto.routes.js";
 
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}));
 const PORT = 5500;
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 app.all("/api/auth/*", toNodeHandler(auth));
 
 app.use(express.json());
 
+app.use("/api/produtos", produtosRoutes);
+console.log("Rotas de produtos registradas em /api/produtos");
+
 app.get("/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date().toISOString() });
-});
-/*
-app.get("/api/me", requireAuth, (req, res) => {
   res.json({
-    message: "Bem-vindo ao seu perfil!",
-    user: req.user,
+    status: "OK",
+    timestamp: new Date().toISOString(),
   });
 });
-*/
+
 app.get("/", (req, res) => {
   res.json({
-    message: "🚀 MinURL API rodando!",
+    message: "Esta é a API do PTAC",
     version: "1.0.0",
     endpoints: {
       health: "/health",
       auth: "/api/auth/get-session",
+      plans: "/api/plans",
     },
   });
 });

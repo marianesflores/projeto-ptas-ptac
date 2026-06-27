@@ -11,7 +11,7 @@ export default function Home() {
           
           <div className="mb-8 flex gap-8 flex-col">
             <h2 className={`text-4xl`}>
-              O melhor restaurante da região!
+              O melhor restaurante do mundo!
             </h2>
           </div>
 
